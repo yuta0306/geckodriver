@@ -12,15 +12,22 @@ from dataclasses import dataclass
 class GeckoDriver:
     _BASE_URL: Final[Text] = 'https://api.coingecko.com/api/v3/'
 
-    request_timeout: int = 120
-    session: requests.Session = requests.Session()
-    retries: Retry = Retry(total=5, backoff_factor=0.5, status_forcelist=[502, 503, 504])
-
     def __post_init__(self):
-        self.session.mount('http://', HTTPAdapter(max_retries=self.retries))
+        self.request_timeout: int = 120
+        self._session: requests.Session = requests.Session()
+        self._retries: Retry = Retry(total=5, backoff_factor=0.5, status_forcelist=[502, 503, 504])
+        self._session.mount('http://', HTTPAdapter(max_retries=self.retries))
 
     
 
     @property
     def BASE_URL(self):
         return self._BASE_URL
+
+    @property
+    def session(self):
+        return self._session
+
+    @property
+    def retries(self):
+        return self._retries
